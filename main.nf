@@ -13,12 +13,6 @@ include { samtools_index } from "./modules2/samtools_index.nf"
 include { bwa_mem_samtools } from "./modules2/bwa_mem.nf"
 
 //include { trimmomatic } from "./modules2/trimmomatic.nf"
-//include { trimmomatic } from "./modules2/trimmomatic.nf"
-//include { trimmomatic } from "./modules2/trimmomatic.nf"
-//include { trimmomatic } from "./modules2/trimmomatic.nf"
-//include { trimmomatic } from "./modules2/trimmomatic.nf"
-//include { trimmomatic } from "./modules2/trimmomatic.nf"
-//include { trimmomatic } from "./modules2/trimmomatic.nf"
 
 // Default & Testing Parameter
 params.reference = "$baseDir/data/ref.fna"
