@@ -11,6 +11,6 @@ process samtools_view {
 
     script:
     """
-    samtools view -bS ${aligned} > aligned.bam -@4
+    samtools view -bS -@4 ${aligned} > aligned.bam 
     """
 }

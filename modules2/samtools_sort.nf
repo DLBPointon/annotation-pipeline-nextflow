@@ -11,6 +11,6 @@ process samtools_sort {
 
     script:
     """
-    samtools sort ${aligned_bam} -o aligned_sorted.bam -@4
+    samtools sort -@4 ${aligned_bam} -o aligned_sorted.bam 
     """
 }

@@ -6,7 +6,11 @@ process bwa_index {
     path(ref)
 
     output:
-    path "ref.fna.sa" // Needs to be changes by making the input a mapped tuple of ID and file
+    path "ref.fna.sa"
+    path "ref.fna.bwt"
+    path "ref.fna.pac"
+    path "ref.fna.amb"
+    path "ref.fna.ann" // Needs to be changes by making the input a mapped tuple of ID and file
 
 
     script:

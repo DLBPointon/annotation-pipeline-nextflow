@@ -11,6 +11,6 @@ process samtools_index {
 
     script:
     """
-    samtools index ${aligned_sorted} -@4
+    samtools index -@4 ${aligned_sorted}
     """
 }

@@ -16,7 +16,7 @@ include { bwa_mem_samtools } from "./modules2/bwa_mem.nf"
 
 // Default & Testing Parameter
 params.reference = "$baseDir/data/ref.fna"
-params.reads = "$baseDir/data/SRR622461_{1,2}.fastq"
+params.reads = "$baseDir/data/COV020619_R{1,2}.fastq"
 params.outdir = "results"
 params.multiqc = "$baseDir/multiqc"
 params.readcsv = "$baseDir/samplesheet.csv"
@@ -50,11 +50,11 @@ workflow snp_pipeline {
 
     // MULTIQC () <- Collect all fastqc runs into one report
 
-    ref_index_ch = bwa_index (reference_ch) //<- Use BWA to index the reference
+    bwa_index (reference_ch) //<- Use BWA to index the reference
 
     samtools_faidx (reference_ch) //<- Use faidx to index the reference too
 
-    bwa_mem_samtools (reference_ch, ref_index_ch, trimmomatic.out.paired_out_1, trimmomatic.out.paired_out_2) //<- Use BWA to allign the TRIMMED.fastq to the REFERENCE and SAMTOOLS convert to BAM
+    bwa_mem_samtools (reference_ch, trimmomatic.out.paired_out_1, trimmomatic.out.paired_out_2) //<- Use BWA to allign the TRIMMED.fastq to the REFERENCE and SAMTOOLS convert to BAM
     // Rename the above now that the samtools bit has been changes to the below
 
     samtools_view (bwa_mem_samtools.out.alignment)
@@ -63,7 +63,7 @@ workflow snp_pipeline {
 
     samtools_index (samtools_sort.out.aligned_sorted)// <- Index the BAM
 
-    // PICARD_MARKDUPES () <- Mark but do not remove dupes (SHOULDN'T BE ANY)
+    // PICARD_MARKDUPES () <- Mark but do not remove dupes (SHOULDN'T BE ANY IN THIS DATA SET (PLAT HUMAN))
 
     // PICARD_COLLECT_ALIGNMENT_SUM_METRICS () <- Add to MULTIQC?
 
