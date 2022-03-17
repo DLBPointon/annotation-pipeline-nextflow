@@ -7,6 +7,11 @@ This is re-written to keep up to date with ToL policy on pipelines.
 It is not optimal as of yet as this project is to learn how to use Nextflow DSL2.
 
 ## Running the pipeline
+Original Data set was too heavy for testing. So I am now using some covid data:
+
+Reads: https://trace.ncbi.nlm.nih.gov/Traces/sra/?run=ERR6295823
+Ref: is small enough it has been uploaded in data/ref.fna
+
 
 On tol-farm, activate conda:
 `conda activate /software/treeoflife/miniconda3/envs/nf-core_dev`
