@@ -17,7 +17,7 @@ include { bwa_mem_samtools } from "./modules2/bwa_mem.nf"
 // Default & Testing Parameter
 params.reference = "$baseDir/data/ref.fna"
 params.reads = "$baseDir/data/COV020619_R{1,2}.fastq"
-params.outdir = "results"
+params.outdir = "$baseDir/results"
 params.multiqc = "$baseDir/multiqc"
 params.readcsv = "$baseDir/samplesheet.csv"
 
@@ -42,26 +42,32 @@ workflow snp_pipeline {
 
     read_pairs_ch.view()
 
+    // Input of [SAMPLE_ID, [FILE1, FILE2]]
     fastqc (read_pairs_ch)
     
-    trimmomatic (read_pairs_ch) // <- Trimming adapters from reads (SHOULDN"T BE ANY)
+    // Input of [SAMPLE_ID, [FILE1, FILE2]]
+    trimmomatic (read_pairs_ch) // <- Trimming adapters from reads
 
-    fastqc_2 (trimmomatic.out.paired_out_1, trimmomatic.out.paired_out_2, trimmomatic.out.unpaired_out_1, trimmomatic.out.unpaired_out_2, fastqc.out.pair_ids) //<- Taking the output trimmed fasta
+    trimmomatic.out.all_out.view()
 
-    // MULTIQC () <- Collect all fastqc runs into one report
+    fastqc_2 (trimmomatic.out.all_out, fastqc.out.pair_ids) //<- Taking the output trimmed fasta
 
-    bwa_index (reference_ch) //<- Use BWA to index the reference
+    // MULTIQC (fastqc.out.collect().ifEmpty([]),
+//              fastqc_2.out.collect().ifEmpty([])
+//              ) <- Collect all fastqc runs into one report
 
-    samtools_faidx (reference_ch) //<- Use faidx to index the reference too
+    // --bwa_index (reference_ch) //<- Use BWA to index the reference
 
-    bwa_mem_samtools (reference_ch, trimmomatic.out.paired_out_1, trimmomatic.out.paired_out_2) //<- Use BWA to allign the TRIMMED.fastq to the REFERENCE and SAMTOOLS convert to BAM
+    // --samtools_faidx (reference_ch) //<- Use faidx to index the reference too
+
+    //bwa_mem_samtools (reference_ch, trimmomatic.out.paired_out) //<- Use BWA to allign the TRIMMED.fastq to the REFERENCE and SAMTOOLS convert to BAM
     // Rename the above now that the samtools bit has been changes to the below
 
-    samtools_view (bwa_mem_samtools.out.alignment)
+    // --samtools_view (bwa_mem_samtools.out.alignment)
 
-    samtools_sort (samtools_view.out.aligned_bam) // <- Self explanatory
+    // --samtools_sort (samtools_view.out.aligned_bam) // <- Self explanatory
 
-    samtools_index (samtools_sort.out.aligned_sorted)// <- Index the BAM
+    // --samtools_index (samtools_sort.out.aligned_sorted)// <- Index the BAM
 
     // PICARD_MARKDUPES () <- Mark but do not remove dupes (SHOULDN'T BE ANY IN THIS DATA SET (PLAT HUMAN))
 

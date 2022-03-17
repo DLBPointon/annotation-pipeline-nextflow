@@ -1,6 +1,6 @@
 process samtools_faidx {
     tag "SAMTOOLS FAIDX on $ref"
-    publishDir "./bwa_aligned", mode: 'move'
+    publishDir "./bwa_aligned", mode: 'copy'
 
     input:
     path(ref)

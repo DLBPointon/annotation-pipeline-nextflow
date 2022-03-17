@@ -1,11 +1,12 @@
+params.outdir = "$baseDir/results"
+
 process bwa_mem_samtools {
     tag "BWA MEM ALIGN"
-    publishDir "./bwa_aligned", mode: 'copy'
+    publishDir "${params.outdir}/bwa_aligned", mode: 'copy'
 
     input:
     path(ref)
-    path(paired_out_1)
-    path(paired_out_2)
+    tuple path(1paired), path(2paired)
 
     output:
     path "aligned.sam", emit: alignment

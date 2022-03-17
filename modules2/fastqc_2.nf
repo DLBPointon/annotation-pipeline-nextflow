@@ -1,20 +1,19 @@
+params.outdir = "$baseDir/results"
+
 process fastqc_2 {
-    tag "FASTQC round 2"
-    publishDir "./fastqc_${pair_id}_logs", mode: 'move'
+    tag "FASTQC2 on $pair_id 1P, 1U, 2P, 2U"
+    cpus 2
+    publishDir "${params.outdir}/fastqc_${pair_id}_logs/", mode: "copy"
 
     input:
-    path(paired_1)
-    path(paired_2)
-    path(unpaired_1)
-    path(unpaired_2)
+    tuple path(1paired), path(2paired), path(1unpaired), path(2unpaired)
     val(pair_id)
 
     output:
-    path("fastqc_${pair_id}_logs")
+    tuple file("*1P_fastqc.zip"), file("*2P_fastqc.zip"), file("*1P_fastqc.html"), file("*2P_fastqc.html"), file("*2U_fastqc.zip"), file("*1U_fastqc.zip"), file("*2U_fastqc.html"), file("*1U_fastqc.html")
 
     script:
     """
-    mkdir fastqc_${pair_id}_logs
-    fastqc -o fastqc_${pair_id}_logs -f fastq -q ${paired_1} ${paired_2} ${unpaired_1} ${unpaired_2}
-    """  
+    fastqc -t ${task.cpus} -q $1paired $2paired $1unpaired $2unpaired
+    """
 }
