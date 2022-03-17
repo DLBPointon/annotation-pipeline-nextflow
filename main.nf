@@ -3,7 +3,7 @@ nextflow.enable.dsl=2
 // Module Definition Statements
 include { fastqc } from "./modules2/fastqc.nf"
 include { trimmomatic } from "./modules2/trimmomatic.nf"
-include { fastqc_2 } from "./modules2/fastqc_2.nf"
+//include { fastqc_2 } from "./modules2/fastqc_2.nf"
 //include { multiqc } from "./modules2/multiqc.nf"
 include { bwa_index } from "./modules2/bwa_index.nf"
 include { samtools_faidx } from "./modules2/samtools_faidx.nf"
@@ -46,21 +46,26 @@ workflow snp_pipeline {
     fastqc (read_pairs_ch)
     
     // Input of [SAMPLE_ID, [FILE1, FILE2]]
+
     trimmomatic (read_pairs_ch) // <- Trimming adapters from reads
 
-    trimmomatic.out.all_out.view()
-
-    fastqc_2 (trimmomatic.out.all_out, fastqc.out.pair_ids) //<- Taking the output trimmed fasta
+    // || fastqc_2 (trimmomatic.out.all_out, fastqc.out.pair_ids) //<- Taking the output trimmed fasta
 
     // MULTIQC (fastqc.out.collect().ifEmpty([]),
 //              fastqc_2.out.collect().ifEmpty([])
 //              ) <- Collect all fastqc runs into one report
 
-    // --bwa_index (reference_ch) //<- Use BWA to index the reference
+    bwa_index (reference_ch) //<- Use BWA to index the reference
 
-    // --samtools_faidx (reference_ch) //<- Use faidx to index the reference too
+    samtools_faidx (reference_ch) //<- Use faidx to index the reference too
 
-    //bwa_mem_samtools (reference_ch, trimmomatic.out.paired_out) //<- Use BWA to allign the TRIMMED.fastq to the REFERENCE and SAMTOOLS convert to BAM
+    Channel
+        .fromFilePairs( "$params.outdir/TRIM_COV020619_R/COV020619_R_{1,2}P.fastq")
+        .set {trimmed}
+    
+    trimmed.view()
+
+    // || bwa_mem_samtools (reference_ch, trimmed) //<- Use BWA to allign the TRIMMED.fastq to the REFERENCE and SAMTOOLS convert to BAM
     // Rename the above now that the samtools bit has been changes to the below
 
     // --samtools_view (bwa_mem_samtools.out.alignment)

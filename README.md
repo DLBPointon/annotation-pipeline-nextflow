@@ -6,6 +6,9 @@ This is re-written to keep up to date with ToL policy on pipelines.
 
 It is not optimal as of yet as this project is to learn how to use Nextflow DSL2.
 
+NOTES:
+Currently bwa_mem.nf (bam_mem_samtools) and fastqc_2 do not work
+
 ## Running the pipeline
 Original Data set was too heavy for testing. So I am now using some covid data:
 

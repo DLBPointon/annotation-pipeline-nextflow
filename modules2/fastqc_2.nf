@@ -14,6 +14,6 @@ process fastqc_2 {
 
     script:
     """
-    fastqc -t ${task.cpus} -q $1paired $2paired $1unpaired $2unpaired
+    fastqc -t ${task.cpus} -q ${1paired} ${2paired} ${1unpaired} ${2unpaired}
     """
 }
