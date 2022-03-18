@@ -1,6 +1,9 @@
+params.outdir = "$baseDir/results"
+
 process samtools_view {
     tag "SAMTOOLS_VIEW on $aligned"
-    publishDir "./bwa_aligned", mode: 'copy'
+    cpus 4
+    publishDir "${params.outdir}/bwa_aligned", mode: 'copy'
 
     input:
     path(aligned)
@@ -11,6 +14,6 @@ process samtools_view {
 
     script:
     """
-    samtools view -bS -@4 ${aligned} > aligned.bam 
+    samtools view -bS -@${task.cpus} ${aligned} > aligned.bam 
     """
 }

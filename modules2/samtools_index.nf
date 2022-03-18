@@ -1,6 +1,9 @@
+params.outdir = "$baseDir/results"
+
 process samtools_index {
     tag "SAMTOOLS_INDEX on $aligned_sorted"
-    publishDir "./bwa_aligned", mode: 'copy'
+    cpus 4
+    publishDir "${params.outdir}/bwa_aligned", mode: 'copy'
 
     input:
     path(aligned_sorted)
@@ -11,6 +14,6 @@ process samtools_index {
 
     script:
     """
-    samtools index -@4 ${aligned_sorted}
+    samtools index -@${task.cpus} ${aligned_sorted}
     """
 }

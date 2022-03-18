@@ -1,6 +1,8 @@
+params.outdir = "$baseDir/results"
+
 process samtools_faidx {
     tag "SAMTOOLS FAIDX on $ref"
-    publishDir "./bwa_aligned", mode: 'copy'
+    publishDir "${params.outdir}/bwa_aligned", mode: 'copy'
 
     input:
     path(ref)

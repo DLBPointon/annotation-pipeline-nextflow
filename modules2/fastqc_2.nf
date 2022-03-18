@@ -6,14 +6,15 @@ process fastqc_2 {
     publishDir "${params.outdir}/fastqc_${pair_id}_logs/", mode: "copy"
 
     input:
-    tuple path(1paired), path(2paired), path(1unpaired), path(2unpaired)
+    path(reads)
+    path(reads_2)
     val(pair_id)
 
     output:
-    tuple file("*1P_fastqc.zip"), file("*2P_fastqc.zip"), file("*1P_fastqc.html"), file("*2P_fastqc.html"), file("*2U_fastqc.zip"), file("*1U_fastqc.zip"), file("*2U_fastqc.html"), file("*1U_fastqc.html")
+    tuple file("*fastqc.zip"), file("*fastqc.html"), emit: fastqc_2
 
     script:
     """
-    fastqc -t ${task.cpus} -q ${1paired} ${2paired} ${1unpaired} ${2unpaired}
+    fastqc -t ${task.cpus} -q ${reads} ${reads_2}
     """
 }

@@ -8,10 +8,8 @@ process trimmomatic {
     tuple val(pair_id), path(reads)
 
     output:
-    tuple file("*_1P.fastq"), file("*_2P.fastq"), emit: paired_out
-    tuple file("*_1U.fastq"), file("*_2U.fastq"), emit: unpaired_out
-    tuple file("*_1P.fastq"), file("*_2P.fastq"), file("*_1U.fastq"), file("*_2U.fastq"), emit: all_out
-
+    tuple path("${pair_id}_1P.fastq"), path("${pair_id}_2P.fastq"), emit: trim_paired
+    tuple path("${pair_id}_1U.fastq"), path("${pair_id}_2U.fastq"), emit: trim_unpaired
 
     script:
     """
