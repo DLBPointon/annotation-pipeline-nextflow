@@ -12,14 +12,17 @@ include { samtools_view } from "./modules2/samtools_view.nf"
 include { samtools_index } from "./modules2/samtools_index.nf"
 include { bwa_mem } from "./modules2/bwa_mem.nf"
 include { picard_mkdup } from "./modules2/picard_mkdup.nf"
-//include { picard_createdict } from "./modules2/picard_createdict.nf"
-//include { picard_collectmetrics } from "./modules2/picard_collectmetrics.nf"
-
+include { samtools_index_2 } from "./modules2/samtools_index_2.nf"
+include { picard_collectmetrics } from "./modules2/picard_collectmetrics.nf"
+include { picard_createdict } from "./modules2/picard_createdict.nf"
+include { gatk_haplocaller } from "./modules2/gatk.nf"
+include { bcftools_filt } from "./modules2/bcftools_filt.nf"
+include { snpeff_annotate } from "./modules2/snpeff_annotate.nf"
 
 // Default & Testing Parameter
 params.reference = "$baseDir/data/ref.fna"
-params.reads = "$baseDir/data/COV020619_R{1,2}.fastq"
-params.trimdir = "$baseDir/results/TRIM_COV020619_R"
+params.reads = "$baseDir/data/SRR*{1,2}.trim.sub.fastq"
+params.trimdir = "$baseDir/results/TRIM_SRR_R"
 params.outdir = "$baseDir/results"
 params.multiqc = "$baseDir/multiqc"
 params.readcsv = "$baseDir/samplesheet.csv"
@@ -73,21 +76,26 @@ workflow snp_pipeline {
 
     samtools_index (samtools_sort.out.aligned_sorted)// || <- Index the BAM
 
-    // ------ SO FAR AT LEAST TESTED -------- //
+    // TODO: mkdup needs to take pair_id as an argument so that we can produce a mkdup.bam per pair_id, that then get merged into THE merged_mkdup.bam
+    picard_mkdup (samtools_sort.out.aligned_sorted) // ||<- Mark but do not remove dupes
 
-    picard_mkdup (samtools_sort.out.aligned_sorted) // <- Mark but do not remove dupes
+    samtools_index_2 (picard_mkdup.out.mkdup_alignment) // ||
 
-    // PICARD_COLLECT_ALIGNMENT_SUM_METRICS () <- Add to MULTIQC?
+    picard_collectmetrics (reference_ch, picard_mkdup.out.mkdup_alignment) // <- Add to MULTIQC?
 
-    // PICARD_CREATE_SEQ_DICT () <- Create DICT for REFERENCE
+    picard_createdict (reference_ch) // ||<- Create DICT for REFERENCE
 
-    // GATK_HAPLOCALLER () <- Get VCF
+    gatk_haplocaller (reference_ch,
+                        picard_createdict.out.ref_dict,
+                        samtools_faidx.out.out_faidx,
+                        picard_mkdup.out.mkdup_alignment,
+                        samtools_index_2.out.aligned_index) // ||<- Get VCF
 
-    // BCFTOOLS_VIEW () <- Filter Quality of master VCF
+    // There was originally a bcf tools excise script here but the cov genome is too small to need it
 
-    // BCFTOOLS_VIEW () <- Get subset of VCF by chromosome
+    bcftools_filt (gatk_haplocaller.out.v_called) // ||<- Get subset of VCF by chromosome
 
-    // SNP_EFF () <- Annotation of VCF
+    snpeff_annotate (bcftools_filt.out.v_called) // <- Annotation of VCF
 
     // BGZIP () <- bgzip vcf file
 
