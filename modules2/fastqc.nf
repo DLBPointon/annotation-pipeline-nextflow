@@ -10,7 +10,7 @@ process fastqc {
 
     output:
     val(pair_id), emit: pair_ids
-    tuple file("*1_fastqc.zip"), file("*2_fastqc.zip"), file("*1_fastqc.html"), file("*2_fastqc.html"), emit: fastqc_1
+    tuple file("${pair_id}_1*.zip"), file("${pair_id}_2*.zip"), file("${pair_id}_1*.html"), file("${pair_id}_2*.html"), emit: fastqc_1
 
 
     script:
