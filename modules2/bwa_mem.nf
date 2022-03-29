@@ -6,7 +6,8 @@ process bwa_mem {
 
     input:
     path(ref)
-    tuple val(sample_id), path(reads)
+    path(f1)
+    path(f2)
 
     output:
     path "aligned.sam", emit: alignment
@@ -14,6 +15,6 @@ process bwa_mem {
     script:
     """
     cp ${ref} ${params.outdir}/data/
-    bwa mem -t 4 -R'@RG\\tID:1\\tLB:library\\tPL:Illumina\\tPU:lane1\\tSM:covid' ${params.outdir}/data/ref.fna ${reads} > aligned.sam
+    bwa mem -t 4 -R'@RG\\tID:1\\tLB:library\\tPL:Illumina\\tPU:lane1\\tSM:covid' ${params.outdir}/data/ref.fna ${f1} ${f2} > aligned.sam
     """
 }

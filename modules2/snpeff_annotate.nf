@@ -9,11 +9,11 @@ process snpeff_annotate {
     path(vcf)
 
     output:
-    path "annotated_a_s_mkdup_filt.vcf.gz", emit: annotation
+    path "annotated_a_s_mkdup_filt.vcf", emit: annotation
     path "annotation_stats.csv", emit: stats
 
     script:
     """
-    snpeff ${params.database} -nodownload ${vcf} > annotated_a_s_mkdup_filt.vcf.gz -csvStats annotation_stats.csv -lof
+    snpeff ${params.database} -nodownload ${vcf} > annotated_a_s_mkdup_filt.vcf -csvStats annotation_stats.csv -lof
     """
 }

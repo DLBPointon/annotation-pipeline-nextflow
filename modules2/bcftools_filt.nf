@@ -9,10 +9,10 @@ process bcftools_filt {
     path(vcf)
 
     output:
-    path "a_s_mkdup_filt.vcf.gz", emit: v_called
+    path "a_s_mkdup_filt.vcf", emit: v_called
 
     script:
     """
-    bcftools view -i '${params.filter}' ${vcf} > a_s_mkdup_filt.vcf.gz
+    bcftools view -i '${params.filter}' ${vcf} > a_s_mkdup_filt.vcf
     """
 }

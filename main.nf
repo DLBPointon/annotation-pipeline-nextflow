@@ -4,6 +4,7 @@ nextflow.enable.dsl=2
 include { fastqc } from "./modules2/fastqc.nf"
 include { trimmomatic } from "./modules2/trimmomatic.nf"
 include { fastqc_2 } from "./modules2/fastqc_2.nf"
+include { merge_fastq } from "./modules2/merge_fastq.nf"
 //include { multiqc } from "./modules2/multiqc.nf"
 include { bwa_index } from "./modules2/bwa_index.nf"
 include { samtools_faidx } from "./modules2/samtools_faidx.nf"
@@ -18,6 +19,8 @@ include { picard_createdict } from "./modules2/picard_createdict.nf"
 include { gatk_haplocaller } from "./modules2/gatk.nf"
 include { bcftools_filt } from "./modules2/bcftools_filt.nf"
 include { snpeff_annotate } from "./modules2/snpeff_annotate.nf"
+include { bgzip } from "./modules2/bgzip.nf"
+include { tabix } from "./modules2/tabix.nf"
 
 // Default & Testing Parameter
 params.reference = "$baseDir/data/ref.fna"
@@ -45,6 +48,8 @@ workflow snp_pipeline {
     Channel
         .fromPath( params.reference, checkIfExists: true )
         .set {reference_ch}
+    
+
 
     read_pairs_ch.view()
 
@@ -54,20 +59,20 @@ workflow snp_pipeline {
     // Input of [SAMPLE_ID, [FILE1, FILE2]]
     trimmomatic (read_pairs_ch) // || <- Trimming adapters from reads
 
-    fastqc_2 (trimmomatic.out.trim_paired, trimmomatic.out.trim_unpaired, fastqc.out.pair_ids) //<- Taking the output trimmed fasta
+    merge_fastq (trimmomatic.out.trim_paired.collect())
+
+    fastqc_2 (merge_fastq.out.f1, merge_fastq.out.f2) //<- Taking the output trimmed fasta
 
     // MULTIQC (fastqc.out.collect().ifEmpty([]),
 //              fastqc_2.out.collect().ifEmpty([])
-//              ) <- Collect all fastqc runs into one report
-
-    // Input of path to ref
+//              ) <- Collect all fastqc runs into one report    // Input of path to ref
     bwa_index (reference_ch) // || <- Use BWA to index the reference
 
     // Input of path to ref
     samtools_faidx (reference_ch) // || <- Use faidx to index the reference too
     
     // Takes the path to ref and the paired/trimmed reads
-    bwa_mem (reference_ch, trimmomatic.out.trim_paired) // ||<- Use BWA to allign the TRIMMED.fastq to the REFERENCE and SAMTOOLS convert to BAM
+    bwa_mem (reference_ch, merge_fastq.out.f1, merge_fastq.out.f2) // ||<- Use BWA to allign the TRIMMED.fastq to the REFERENCE and SAMTOOLS convert to BAM
     // Rename the above now that the samtools bit has been changes to the below
 
     samtools_view (bwa_mem.out.alignment) // || <- SAM to BAM
@@ -95,10 +100,10 @@ workflow snp_pipeline {
 
     bcftools_filt (gatk_haplocaller.out.v_called) // ||<- Get subset of VCF by chromosome
 
-    snpeff_annotate (bcftools_filt.out.v_called) // <- Annotation of VCF
+    snpeff_annotate (bcftools_filt.out.v_called) // ||<- Annotation of VCF
 
-    // BGZIP () <- bgzip vcf file
+    bgzip (snpeff_annotate.out.annotation)
 
-    // TABIX () <- Indexing of VCF for
+    tabix (bgzip.out.zipped_annotation) // ||<- Indexing of VCF for
 
 }
