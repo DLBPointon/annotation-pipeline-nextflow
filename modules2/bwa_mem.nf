@@ -1,4 +1,5 @@
 params.outdir = "$baseDir/results"
+params.sample_name = 'E.coli'
 
 process bwa_mem {
     tag "BWA MEM ALIGN"
@@ -15,6 +16,6 @@ process bwa_mem {
     script:
     """
     cp ${ref} ${params.outdir}/data/
-    bwa mem -t 4 -R'@RG\\tID:1\\tLB:library\\tPL:Illumina\\tPU:lane1\\tSM:covid' ${params.outdir}/data/ref.fna ${f1} ${f2} > aligned.sam
+    bwa mem -t 4 -R'@RG\\tID:1\\tLB:library\\tPL:Illumina\\tPU:lane1\\tSM:${params.sample_name}' ${params.outdir}/data/ref.fna ${f1} ${f2} > aligned.sam
     """
 }
