@@ -7,7 +7,15 @@ This is based off of a prior pipeline written in Snakemake found [here](https://
 NOTES:
 This does not currently use nf_core modules.
 
-So far 11 of 17 modules are implemented and working.
+As of 1st April 2022 (Fantastically timed), all modules are not working and producing VCF files.
+
+ISSUES:
+    - I've found that params are only able to be set inside the module which isn't ideal. This needs looking at.
+    - Naming schemes for files arn't particularly dynamic and WILL cause an issue (overwriting) if running multiple runs on different orgs (perhaps have sample name make up the output dir?).
+    - Need to make this work via cluster like the previous snakemake version did.
+    - Use nf-core modules <- will require a significant rewrite.
+    - Use Docker.
+    - Add MultiQC.
 
 ## Running the pipeline
 
@@ -98,17 +106,12 @@ This can also be downloaded from the official nf-core conda.
 Then run the pipeline:
 `nextflow run main.nf -entry snp_pipeline -ansi-log true`
 
-This pipeline has been written to take advantage of docker containers available on DockerHub (to mimic internal pipelines).
-
 ---
 
 ## Local Install
 
-TODO: add the actual yaml to the repo
-
-Internal sanger:
-
-- Download this [yaml](https://gitlab.internal.sanger.ac.uk/tol-it/conda-environments/-/tree/main/environments)
+The env I am using (and have included in this repo) is slightly modified from the default yaml.
+This is because I am currently running my own modules rather than those available on nf-core or DockerHub.
 
 - `conda env create -f {YAML}`
 
