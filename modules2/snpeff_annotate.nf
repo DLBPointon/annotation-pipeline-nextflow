@@ -14,6 +14,6 @@ process snpeff_annotate {
 
     script:
     """
-    snpeff ${params.database} -nodownload ${vcf} > annotated_a_s_mkdup_filt.vcf -csvStats annotation_stats.csv -lof
+    snpeff ${params.database} -csvStats annotation_stats.csv -lof -nodownload ${vcf} > annotated_a_s_mkdup_filt.vcf 
     """
 }
