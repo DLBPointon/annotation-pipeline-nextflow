@@ -28,7 +28,6 @@ params.reads = "$baseDir/data/SRR*{1,2}.trim.sub.fastq"
 params.trimdir = "$baseDir/results/TRIM_SRR_R"
 params.outdir = "$baseDir/results"
 params.multiqc = "$baseDir/multiqc"
-params.readcsv = "$baseDir/samplesheet.csv"
 
 // Logging Information
 log.info """\
@@ -48,15 +47,11 @@ workflow snp_pipeline {
     Channel
         .fromPath( params.reference, checkIfExists: true )
         .set {reference_ch}
-    
-
 
     read_pairs_ch.view()
 
-    // Input of [SAMPLE_ID, [FILE1, FILE2]]
     fastqc (read_pairs_ch) // ||
-    
-    // Input of [SAMPLE_ID, [FILE1, FILE2]]
+
     trimmomatic (read_pairs_ch) // || <- Trimming adapters from reads
 
     merge_fastq (trimmomatic.out.trim_paired.collect())
@@ -68,12 +63,9 @@ workflow snp_pipeline {
 //              ) <- Collect all fastqc runs into one report    // Input of path to ref
     bwa_index (reference_ch) // || <- Use BWA to index the reference
 
-    // Input of path to ref
     samtools_faidx (reference_ch) // || <- Use faidx to index the reference too
-    
-    // Takes the path to ref and the paired/trimmed reads
+
     bwa_mem (reference_ch, merge_fastq.out.f1, merge_fastq.out.f2) // ||<- Use BWA to allign the TRIMMED.fastq to the REFERENCE and SAMTOOLS convert to BAM
-    // Rename the above now that the samtools bit has been changes to the below
 
     samtools_view (bwa_mem.out.alignment) // || <- SAM to BAM
 
@@ -81,7 +73,6 @@ workflow snp_pipeline {
 
     samtools_index (samtools_sort.out.aligned_sorted)// || <- Index the BAM
 
-    // TODO: mkdup needs to take pair_id as an argument so that we can produce a mkdup.bam per pair_id, that then get merged into THE merged_mkdup.bam
     picard_mkdup (samtools_sort.out.aligned_sorted) // ||<- Mark but do not remove dupes
 
     samtools_index_2 (picard_mkdup.out.mkdup_alignment) // ||
