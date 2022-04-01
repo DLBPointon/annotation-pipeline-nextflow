@@ -13,6 +13,6 @@ process bcftools_filt {
 
     script:
     """
-    bcftools view -i '${params.filter}' ${vcf} > a_s_mkdup_filt.vcf
+    bcftools view -i '${params.filter}' -a ${vcf} > a_s_mkdup_filt.vcf
     """
 }
