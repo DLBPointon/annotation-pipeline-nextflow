@@ -2,19 +2,25 @@
 
 ## Re-written in Nextflow
 
-This is based off of a prior pipeline written in Snakemake found [here](https://github.com/DLBPointon/annotation-pipeline-snakemake)
+This is based off of a prior pipeline written in SnakeMake found [here](https://github.com/DLBPointon/annotation-pipeline-snakemake)
 
 NOTES:
 This does not currently use nf_core modules.
 
-As of 1st April 2022 (Fantastically timed), all modules are working and producing VCF files.
+As of 1st April 2022 (Fantastically timed), all modules are working and producing the needed VCF files.
 
 ISSUES:
+
     - I've found that params are only able to be set inside the module which isn't ideal. This needs looking at.
-    - Naming schemes for files arn't particularly dynamic and WILL cause an issue (overwriting) if running multiple runs on different orgs (perhaps have sample name make up the output dir?).
-    - Need to make this work via cluster like the previous snakemake version did.
-    - Use nf-core modules <- will require a significant rewrite.
+
+    - Naming schemes for files aren't particularly dynamic and WILL cause an issue (overwriting) if running multiple runs on different orgs (perhaps have sample name make up the output dir?).
+
+    - Need to make this work via cluster like the previous SnakeMake version did.
+
+    - Use proper nf-core modules <- will require a significant rewrite.
+
     - Use Docker.
+
     - Add MultiQC.
 
 ## Running the pipeline
