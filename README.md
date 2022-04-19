@@ -7,7 +7,7 @@ This is based off of a prior pipeline written in Snakemake found [here](https://
 NOTES:
 This does not currently use nf_core modules.
 
-As of 1st April 2022 (Fantastically timed), all modules are not working and producing VCF files.
+As of 1st April 2022 (Fantastically timed), all modules are working and producing VCF files.
 
 ISSUES:
     - I've found that params are only able to be set inside the module which isn't ideal. This needs looking at.
