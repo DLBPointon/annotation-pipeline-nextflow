@@ -22,6 +22,8 @@ ISSUES:
     - Use Docker.
 
     - Add MultiQC.
+    
+    - Add sub-workflows to optimise the structure of the pipeline.
 
 ## Running the pipeline
 
